@@ -1,7 +1,7 @@
 import express from "express";
 import cors from 'cors';
 import 'dotenv/config';
-import { MongoClient } from 'mongodb';
+import { MongoClient,ObjectId } from 'mongodb';
 const app = express();
   const client = new MongoClient(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.ofxhydd.mongodb.net/`);
 const PORT= process.env.PORT || 5000;
@@ -20,8 +20,9 @@ export async function connectToMongoDB() {
 const mongoClient= await connectToMongoDB();
 const db = mongoClient.db("StudioSpace");
 const StudiosCollection =db.collection("Studios");
+const CategoriesCollection = db.collection('Categories');
 
-app.get('/studios',async(req,res)=>{
+app.get('/featured-studios',async(req,res)=>{
       const studios = await StudiosCollection
       .find({})
       .sort({ rating: -1 })
@@ -29,10 +30,37 @@ app.get('/studios',async(req,res)=>{
       .toArray();
       res.send(studios);
 })
+app.get("/category", async (req, res) => {
+  const { category } = req.query;
+
+  const query = category ? { category } : {};
+
+  const studios = await CategoriesCollection.find(query)
+    .sort({ rating: -1 })
+    .toArray();
+
+  res.send(studios);
+});
 app.get('/',(req,res)=>{
   res.send('users are coming soon');
 })
+app.get('/studios/:id',async(req,res)=>{
+   const {id}=req.params;
+      const result = await StudiosCollection.findOne({_id:new ObjectId(id)});
+     res.send(result);
+})
+app.get('/studios', async (req, res) => {
+  const { category } = req.query;
 
+  const query = category ? { category } : {};
+
+  const studios = await StudiosCollection
+    .find(query)
+    .sort({ rating: -1 })
+    .toArray();
+
+  res.send(studios);
+});
 app.listen(PORT,()=>{
   console.log(`server is running on PORT ${PORT}`);
 })
