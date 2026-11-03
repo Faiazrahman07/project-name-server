@@ -61,6 +61,13 @@ app.get('/studios', async (req, res) => {
 
   res.send(studios);
 });
+app.post('/add-studio',async (req,res)=>{
+  const data = req.body;
+  const result= await StudiosCollection.insertOne(data);
+
+  console.log(result);
+  res.send(result);
+});
 app.listen(PORT,()=>{
   console.log(`server is running on PORT ${PORT}`);
 })
