@@ -21,7 +21,7 @@ const mongoClient= await connectToMongoDB();
 const db = mongoClient.db("StudioSpace");
 const StudiosCollection =db.collection("Studios");
 const CategoriesCollection = db.collection('Categories');
-
+const BookingsCollection = db.collection('Bookings');
 app.get('/featured-studios',async(req,res)=>{
       const studios = await StudiosCollection
       .find({})
@@ -88,6 +88,20 @@ app.patch('/studios/:id', async (req, res) => {
 
   res.send(result);
 });
+app.post('/bookings', async (req, res) => {
+    console.log("Booking API called!");
+
+  const booking = req.body;
+
+  const result = await BookingsCollection.insertOne({
+    ...booking,
+    status: "Pending",
+    createdAt: new Date()
+  });
+
+  res.send(result);
+});
+
 app.listen(PORT,()=>{
   console.log(`server is running on PORT ${PORT}`);
 })
