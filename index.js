@@ -101,7 +101,39 @@ app.post('/bookings', async (req, res) => {
 
   res.send(result);
 });
+app.get('/my-bookings', async (req, res) => {
+  const email = req.query.email;
 
+  const result = await BookingsCollection
+    .find({ userEmail: email })
+    .toArray();
+  res.send(result);
+});
+app.patch('/bookings/:id/cancel', async (req, res) => {
+  const id = req.params.id;
+
+  const result = await BookingsCollection.updateOne(
+    {
+      _id: new ObjectId(id),
+      status: "Pending"
+    },
+    {
+      $set: {
+        status: "Cancelled"
+      }
+    }
+  );
+
+  if (result.modifiedCount === 0) {
+    return res.status(400).send({
+      message: "Booking cannot be cancelled"
+    });
+  }
+
+  res.send({
+    message: "Booking cancelled successfully"
+  });
+});
 app.listen(PORT,()=>{
   console.log(`server is running on PORT ${PORT}`);
 })
