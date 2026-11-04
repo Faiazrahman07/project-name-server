@@ -134,6 +134,13 @@ app.patch('/bookings/:id/cancel', async (req, res) => {
     message: "Booking cancelled successfully"
   });
 });
+app.delete("/studios/:id", async (req, res) => {
+  const result = await StudiosCollection.deleteOne({
+    _id: new ObjectId(req.params.id),
+  });
+
+  res.send(result);
+});
 app.listen(PORT,()=>{
   console.log(`server is running on PORT ${PORT}`);
 })
