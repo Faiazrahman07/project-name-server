@@ -68,6 +68,26 @@ app.post('/add-studio',async (req,res)=>{
   console.log(result);
   res.send(result);
 });
+app.get('/my-listings', async (req, res) => {
+  const email = req.query.email;
+
+  const result = await StudiosCollection
+    .find({ userEmail: email })
+    .toArray();
+
+  res.send(result);
+});
+app.patch('/studios/:id', async (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+
+  const result = await StudiosCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: data }
+  );
+
+  res.send(result);
+});
 app.listen(PORT,()=>{
   console.log(`server is running on PORT ${PORT}`);
 })
